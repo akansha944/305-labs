@@ -5,25 +5,29 @@ entity wgen2 is
 end entity wgen2;
 
  architecture behaviour of wgen2 is
-	signal A1, B1, C1: bit;
+	signal A1, B1, C1, Z1: bit;
  begin
 	process
 	begin
-		
+		A1 <= '1', '0' after 2 ns, '1' after 3 ns, '0' after 4 ns;
+>       B1 <= '0', '1' after 1 ns, '0' after 2 ns, '1' after 3 ns, '0' after 4 ns;
+>       C1 <= '1', '0' after 1 ns, '1' after 2 ns, '0' after 3 ns, '1' after 4 ns;
+        wait for 5 ns;
 	end process;
+
 	--Assign values
 	
- 	process (X, A1, B1, C1)
+ 	process (Enable, X, A1, B1, C1)
 	begin
 	case X is 
-		when "000" => Z <= A1 or B1;
-		when "001" => Z <= B1 and C1;
-		when "010" => Z <= A1 or B1 or C1;
-		when "011" => Z <= (A1 and B1) or C1;
-		when "100" => Z <= '0';
-		when "101" => Z <= A1;
-		when "110" => Z <= A1;
-		when "111" => Z <= '1';
+		when "000" => Z1 <= A1 or B1;
+		when "001" => Z1 <= B1 and C1;
+		when "010" => Z1 <= A1 or B1 or C1;
+		when "011" => Z1 <= (A1 and B1) or C1;
+		when "100" => Z1 <= '0';
+		when "101" => Z1 <= A1;
+		when "110" => Z1 <= A1;
+		when "111" => Z1 <= '1';
 		when others => null;
 	end case;	
     end process;
@@ -31,5 +35,6 @@ end entity wgen2;
 	A <= A1 and Enable;
 	B <= B1 and Enable;
 	C <= C1 and Enable;
+	Z <= Z1 and Enable;
 end architecture behaviour;
 
