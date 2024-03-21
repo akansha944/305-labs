@@ -1,26 +1,35 @@
--- Testbench for the lab 2 task 1. 
-entity test_lab2 is
-end entity test_lab2;
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_unsigned.all;
+use ieee.numeric_std.all;
 
-architecture my_test of test_lab2 is 
-    signal t_clk, t_reset : bit;
-    signal counter : integer;
+-- Testbench for the lab 2 task 1. 
+entity test_mode is
+end entity test_mode;
+
+architecture my_test of test_mode is 
+    signal Mode : std_logic_vector (1 downto 0);
+    signal t_clk, t_reset, t_enable : std_logic_vector(0);
+    signal counter : std_logic_vector(3 downto 0);
 
     component lab2 is 
-        port (Clk, Reset, Enable : in bit;
-              Q : out bit);
+        port (Mode : in std_logic_vector (1 downto 0);
+	Clk, Reset, Enable : in std_logic_vector(0);
+        Q : out std_logic_vector(3 downto 0));
     end component lab2;
-begin
-     DUT: test_lab2 port map (t_clk, t_reset, counter);
- 
-     -- Initialization process (code that executes only once).
-     init: process
-     begin 
+     begin
+     DUT: lab2 port map (t_clk, t_reset, t_enable, counter, Mode);
+    
        -- reset pulse
        t_reset <= '0', '1' after 2 ns, '0' after 7 ns;
-         wait;
-     end process init;
-
+       -- enable signal
+       t_enable <= '1', '0' after 255 ns, '1' after 610 ns;
+       -- mode changing between modes
+       Mode <=  "00", 
+		"01" after 500 ns, 
+		"10" after 500 ns, 
+		"11" after 500 ns;
+       
      -- clock generation
      clk_gen: process
      begin
