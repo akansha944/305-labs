@@ -10,11 +10,11 @@ entity lab2 is
 end entity lab2;
 
  architecture behaviour of lab2 is
-	signal Q1: unsigned(3 downto 0);
+	signal Q1: std_logic_vector(3 downto 0);
 	begin
- 	process (Clk, Reset)
+ 	process (Clk, Reset, Mode)
 	begin
-	if (Reset = '1') then
+	if (Reset = '1' or Mode'event) then
 		case Mode is 
 			when "00" => Q1 <= "1011";
 			when "01" => Q1 <= "1010";
@@ -24,7 +24,6 @@ end entity lab2;
 		end case;
 	elsif rising_edge(clk) then
 		if (Enable = '1') then
-			if(Reset = '1') then 
 			case Mode is 
 				when "00" => 
 					if (Q1 > 1) then
@@ -57,9 +56,8 @@ end entity lab2;
 				when "11" => Q1 <= "1111";
 				when others => null;
 			end case;
-			end if;	
 		end if;
 	end if;
     end process;
-	Q <= std_logic_vector(Q1);	
+	Q <= Q1;	
 end architecture behaviour;
