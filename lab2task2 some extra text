@@ -1,0 +1,107 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+entity BCD_Counter is
+    Port ( Clk : in STD_LOGIC;
+           Reset : in STD_LOGIC;
+           Enable : in STD_LOGIC;
+           Direction : in STD_LOGIC;
+           Init : in STD_LOGIC;
+           BCD_Out : out STD_LOGIC_VECTOR (3 downto 0));
+end BCD_Counter;
+
+architecture Behavioral of BCD_Counter is
+    signal Count : STD_LOGIC_VECTOR (3 downto 0) := "0000";
+begin
+    process (Clk, Reset)
+    begin
+        if Reset = '1' then
+            Count <= "0000";
+        elsif rising_edge(Clk) then
+            if Enable = '1' then
+                if Init = '1' then
+                    if Direction = '0' then
+                        Count <= "1001"; -- Initialize to 9 if Direction is '0'
+                    else
+                        Count <= "0000"; -- Initialize to 0 if Direction is '1'
+                    end if;
+                else
+                    if Direction = '0' then
+                        Count <= Count + 1; -- Up counter
+                    else
+                        Count <= Count - 1; -- Down counter
+                    end if;
+                end if;
+            end if;
+        end if;
+    end process;
+    
+    BCD_Out <= Count;
+end Behavioral;
+
+
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity BCD_Counter_TB is
+end BCD_Counter_TB;
+
+architecture Behavioral of BCD_Counter_TB is
+    constant CLK_PERIOD : time := 10 ns;
+    
+    signal Clk, Reset, Enable, Direction, Init : STD_LOGIC := '0';
+    signal BCD_Out : STD_LOGIC_VECTOR (3 downto 0);
+begin
+    DUT : entity work.BCD_Counter
+        port map (
+            Clk => Clk,
+            Reset => Reset,
+            Enable => Enable,
+            Direction => Direction,
+            Init => Init,
+            BCD_Out => BCD_Out
+        );
+    
+    -- Clock process
+    Clk_Process : process
+    begin
+        while now < 500 ns loop
+            Clk <= '0';
+            wait for CLK_PERIOD / 2;
+            Clk <= '1';
+            wait for CLK_PERIOD / 2;
+        end loop;
+        wait;
+    end process;
+    
+    -- Stimulus process
+    Stimulus : process
+    begin
+        Reset <= '1';
+        wait for 20 ns;
+        Reset <= '0';
+        wait for 20 ns;
+        Enable <= '1';
+        Init <= '1';
+        Direction <= '0'; -- Up counter
+        wait for 100 ns;
+        Init <= '0'; -- Start counting
+        wait for 400 ns;
+        Direction <= '1'; -- Down counter
+        wait for 100 ns;
+        Init <= '1';
+        wait for 100 ns;
+        Init <= '0'; -- Start counting
+        wait for 200 ns;
+        Enable <= '0'; -- Freeze
+        wait for 200 ns;
+        Enable <= '1'; -- Resume
+        wait for 100 ns;
+        Reset <= '1';
+        wait;
+    end process;
+end Behavioral;
+
