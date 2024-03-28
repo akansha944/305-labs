@@ -1,6 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
+use IEEE.std_logic_unsigned.all;
 
 -- Testbench for the BCD_Counter. 
 entity test_bcd_counter is
@@ -16,7 +17,7 @@ architecture my_test of test_bcd_counter is
     end component bcd_counter;
     
 begin
-     DUT: bcd_counter port map (t_clk, t_init, t_direction, t_enable, t_Q);
+     DUT: bcd_counter port map (t_clk, t_direction, t_enable, t_init, t_Q);
  
      -- Initialization process (code that executes only once).
      init: process
@@ -26,8 +27,8 @@ begin
        -- enable signal
        t_enable <= '1', '0' after 255 ns, '1' after 610 ns;
        -- direction signal
-       t_direction <= '0', '1' after 200 ns, '0' after 200 ns, '1' after 100 ns;
-        wait;
+       t_direction <= '0', '1' after 200 ns, '0' after 400 ns, '1' after 600 ns;
+        wait for 610 ns;
      end process init;
 
      -- clock generation

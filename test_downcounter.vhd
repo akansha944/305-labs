@@ -7,22 +7,22 @@ entity test_down_counter is
 end entity test_down_counter;
 
 architecture my_test of test_down_counter is 
-    signal t_clk, t_init, t_enable : std_logic;
-    signal t_Q_ones, t_Q_tens : std_logic_vector(3 downto 0);
+    signal t_clk, t_reset, t_enable : std_logic;
+    signal output : std_logic_vector(7 downto 0);
 
     component down_counter is 
-        port (Clk, Enable, Init : in std_logic;
-		    Q_ones, Q_tens : out std_logic_vector(3 downto 0));
+        port (Clk, Enable, Reset : in std_logic;
+		   BCD_out : out std_logic_vector(7 downto 0));
     end component down_counter;
     
 begin
-     DUT: bcd_counter port map (t_clk, t_init, t_enable, t_Q_ones, t_Q_tens);
+     DUT: down_counter port map (t_clk, t_enable, t_reset, output);
  
      -- Initialization process (code that executes only once).
      init: process
      begin 
        -- init pulse
-       t_init <= '1', '0' after 10 ns;
+       t_reset <= '1', '0' after 10 ns;
        -- enable signal
        t_enable <= '1', '0' after 255 ns, '1' after 610 ns;
        wait;
